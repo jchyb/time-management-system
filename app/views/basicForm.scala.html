@@ -1,0 +1,28 @@
+@import helper._
+@(taskForm: Form[TaskForm], taskDelForm: Form[TaskForm], tasks: List[Task])(implicit request: RequestHeader, messages: Messages)
+
+@main("Scala Play forms tutorial") {
+  <h1>Scala Play forms tutorial</h1>
+
+  @form(action = CSRF(routes.HomeController.simpleFormPost)) {
+    @inputText(taskForm("name"))
+
+    <input type="submit" value="Add">
+  }
+
+  @form(action = CSRF(routes.HomeController.simpleFormDel)) {
+    @inputText(taskDelForm("name"))
+
+    <input type="submit" value="Delete">
+  }
+
+
+  <h1>Task List</h1>
+  <ul>
+    @for(task <- tasks) {
+    <li>@task.name, @task.id</li>
+    }
+  </ul>
+}
+
+

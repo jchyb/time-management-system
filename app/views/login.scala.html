@@ -1,0 +1,10 @@
+@(loginForm: Form[LoginForm])(implicit request: RequestHeader, messages: Messages)
+
+@(main){
+    <h1>Login:</h1>
+    @form(action = CSRF(routes.HomeController.simpleFormPost)) {
+        @inputText(loginForm("username"))
+        @inputText(loginForm("password"))
+        <input type="submit" value="Submit">
+    }
+}

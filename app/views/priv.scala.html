@@ -1,6 +1,9 @@
-@()
+@import helper._
+@(username: String)(implicit request: RequestHeader, messages: Messages)
 
-@main{
-<h1>Private page accessed!</h1>
-
+@main("private page"){
+    <h1>Private page accessed! Yay! @username </h1>
+    @form(action = CSRF(routes.HomeController.logout())){
+        <input type="submit" value="Log Out">
+    }
 }

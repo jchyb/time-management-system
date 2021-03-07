@@ -1,10 +1,40 @@
-@(loginForm: Form[LoginForm])(implicit request: RequestHeader, messages: Messages)
+@import helper._
+@(alerts: List[String], loginForm: Form[LoginForm], registerForm: Form[RegisterForm])(implicit request: RequestHeader, messages: Messages)
 
-@(main){
-    <h1>Login:</h1>
-    @form(action = CSRF(routes.HomeController.simpleFormPost)) {
-        @inputText(loginForm("username"))
-        @inputText(loginForm("password"))
+@main("login page"){
+<div class="container pt-1 pb-1">
+    <h1>TaskTimer</h1>
+    Personal Time Manager
+</div>
+
+<div class="absolute-center">
+<div class="row">
+    <div class="container pt-1 pb-1 border col-5">
+    <h2>Login:</h2>
+    @form(action = CSRF(routes.HomeController.loginPost)) {
+        @inputText(registerForm("username"),'_label -> "username:",'_showConstraints -> false)
+        @inputText(registerForm("password"),'_label -> "password:",'_showConstraints -> false)
         <input type="submit" value="Submit">
     }
+    </div>
+
+    <div class="container pt-1 pb-1 border col-5">
+    <h2>Register:</h2>
+    @form(action = CSRF(routes.HomeController.registerPost)) {
+        @inputText(registerForm("username"),'_label -> "username:",'_showConstraints -> false)
+        @inputText(registerForm("password"),'_label -> "password:",'_showConstraints -> false)
+        <input type="submit" value="Submit">
+    }
+    </div>
+    <div class="container pt-3 pb-3">
+    @if(alerts!=null){
+        @for(alert <- alerts) {
+            <div class="alert alert-info alert-dismissible fade show">
+                <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                <strong>Info!</strong> @alert
+            </div>
+        }
+    }
+    </div>
+</div>
 }

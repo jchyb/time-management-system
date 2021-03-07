@@ -1,15 +1,21 @@
 package controllers
 
+import java.time.{LocalDateTime, ZoneOffset}
+
 import javax.inject._
-import play.api._
+import models._
+import play.api.Logger
 import play.api.mvc._
 
+import scala.concurrent.{ExecutionContext, Future}
 /**
  * This controller creates an `Action` to handle HTTP requests to the
  * application's home page.
  */
 @Singleton
-class HomeController @Inject()(val controllerComponents: ControllerComponents) extends BaseController {
+class HomeController @Inject()(cc: ControllerComponents, val taskDAO: TaskDAO, val userDAO: UserDAO, val sessionDAO: SessionDAO)
+                              (implicit ex: ExecutionContext)
+  extends AbstractController(cc) with play.api.i18n.I18nSupport {
 
   /**
    * Create an Action to render an HTML page.
@@ -18,7 +24,145 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents) e
    * will be called when the application receives a `GET` request with
    * a path of `/`.
    */
-  def index() = Action { implicit request: Request[AnyContent] =>
+
+  /**
+   * No persistent data so far. This will be changed later.
+   *
+   */
+  /////////////////////////// Forms - see routes on how to access
+
+  def index(): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
     Ok(views.html.index())
   }
+
+  def simpleFormPost(): Action[AnyContent] = Action.async { implicit request =>
+    withUser(user =>
+      BasicForm.task.bindFromRequest().fold(
+        formWithErrors => {
+          Future.successful(
+            BadRequest(views.html.basicForm(formWithErrors, BasicForm.task, List(Task(0,"Any")) ++ taskDAO.listByUser(user.userID)))
+          )
+        },
+        formData => {
+          taskDAO.create(user.userID,formData.name)
+          Future.successful(
+            Ok(views.html.basicForm(BasicForm.task, BasicForm.task, List(Task(0,"Any")) ++ taskDAO.listByUser(user.userID)))
+          )
+        }
+      )
+    )(Future.successful(Redirect(routes.HomeController.login()).withSession("sessionToken" -> null)))
+  }
+  def simpleFormPostDel(): Action[AnyContent] = Action.async { implicit request =>
+    withUser(user =>
+      BasicForm.task.bindFromRequest().fold(
+        formWithErrors => {
+          Future.successful(
+            BadRequest(views.html.basicForm(BasicForm.task, formWithErrors, List(Task(0,"Any")) ++ taskDAO.listByUser(user.userID)))
+          )
+        },
+        formData => {
+          taskDAO.delete(user.userID, formData.name)
+          Future.successful(
+            Ok(views.html.basicForm(BasicForm.task, BasicForm.task, List(Task(0,"Any")) ++ taskDAO.listByUser(user.userID)))
+          )
+        }
+      )
+    )(Future.successful(Redirect(routes.HomeController.login()).withSession("sessionToken" -> null)))
+  }
+  def forms() = Action.async { implicit request: Request[AnyContent] =>
+    withUser{user =>
+      Future.successful(
+        Ok(views.html.basicForm(BasicForm.task, BasicForm.task, List(Task(0,"Any")) ++ taskDAO.listByUser(user.userID)))
+      )
+    }{
+      Future.successful(Redirect(routes.HomeController.login()).withSession("sessionToken" -> null))
+    }
+  }
+
+  /////////////////////////////////////////////////// Login
+
+  def login() = Action { implicit request =>
+    Ok(views.html.login(null, BasicForm.login, BasicForm.register))
+  }
+
+  def logout()  = Action.async { implicit request =>
+    sessionDAO.removeSession(request.session.get("sessionToken")).map(_ =>
+      Redirect(routes.HomeController.login()).withSession("sessionToken" -> null))
+  }
+
+  def loginPost() = Action.async { implicit request =>
+    BasicForm.login.bindFromRequest().fold(
+      formWithErrors => {
+        Future.successful(BadRequest(views.html.login(null,formWithErrors, BasicForm.register)))
+      },
+      formData => {
+        userLogin(formData.username, formData.password)
+      }
+    )
+  }
+  def registerPost() = Action.async { implicit request =>
+    BasicForm.register.bindFromRequest().fold(
+      formWithErrors => {
+        Future.successful(BadRequest(views.html.login(null, BasicForm.login, formWithErrors)))
+      },
+      formData => {
+        userDAO.addUser(formData.username, formData.password)
+        Future.successful(
+          Ok(views.html.login(List("Registration successful! Please login."), BasicForm.login, BasicForm.register)))
+      }
+    )
+  }
+
+  val logger = Logger(this.getClass())
+
+  def userLogin(username: String, password: String)(implicit request: Request[AnyContent]): Future[Result] = {
+      userDAO.getUser(username).flatMap {
+        case Some(user) =>
+          if(user.password == password) {
+            sessionDAO.generateToken(username).map { token =>
+              logger.info("ok " + token)
+              Redirect(routes.HomeController.priv()).withSession("sessionToken" -> token)
+            }
+          } else {
+            Future.successful(
+              Ok(views.html.login(List("Incorrect username or password."), BasicForm.login, BasicForm.register))
+            )
+          }
+        case None => Future {Ok(views.html.login(List("Incorrect username or password."), BasicForm.login, BasicForm.register))}
+      }
+  }
+
+  def priv() = Action.async { implicit request =>
+    withUser(user => Future.successful(Ok(views.html.priv(user.username))))(
+      Future.successful(Unauthorized(views.html.defaultpages.unauthorized()))
+    )
+  }
+
+  private def withUser(block: User => Future[Result])(unauthorizedResult: => Future[Result])
+                         (implicit request: Request[AnyContent]): Future[Result] = {
+    userFromRequest(request)
+      .map {
+        case Some(user) => block(user)
+        case None => unauthorizedResult
+      }.flatten
+  }
+
+  private def userFromRequest(request: RequestHeader): Future[Option[User]] ={
+    request.session.get("sessionToken")
+      .map(token => sessionDAO.getSession(token)
+        .map {
+          case Some(value) =>
+            if (value.expiration.isAfter(LocalDateTime.now(ZoneOffset.UTC))) Some(value)
+            else None
+          case None => None
+          }.map {
+            case Some(value) => userDAO.getUser(value.username)
+            case None => Future.successful(None)
+          }
+      ) match {
+        case Some(future) => future.flatten
+        case None => Future.successful(None)
+      }
+  }
+
 }

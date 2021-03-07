@@ -1,25 +1,17 @@
 package models
 
-import java.time.{LocalDateTime, ZoneOffset}
-import java.util.UUID
+import java.time.LocalDateTime
 
-import scala.collection.mutable
+import business.memory.SessionInMemoryDAO
+import com.google.inject.ImplementedBy
+
+import scala.concurrent.{ExecutionContext, Future}
 
 case class Session(token: String, username: String, expiration: LocalDateTime)
 
-object SessionDAO {
-
-  private val sessions= mutable.Map.empty[String, Session]
-
-  def getSession(token: String): Option[Session] = {
-    sessions.get(token)
-  }
-
-  def generateToken(username: String): String = {
-    val token = s"$username-${UUID.randomUUID().toString}"
-    sessions.put(token, Session(token, username, LocalDateTime.now(ZoneOffset.UTC).plusSeconds(30)))
-
-    token
-  }
-
+@ImplementedBy(classOf[SessionInMemoryDAO])
+trait SessionDAO {
+  def getSession(token: String)(implicit c: ExecutionContext): Future[Option[Session]]
+  def generateToken(username: String)(implicit c: ExecutionContext) : Future[String]
+  def removeSession(maybeToken: Option[String])(implicit c: ExecutionContext)  : Future[Option[Session]]
 }

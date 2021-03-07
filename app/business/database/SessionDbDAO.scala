@@ -1,5 +1,5 @@
 package business.database
 
-class SessionDBDAO {
-
-}
+//class SessionDbDAO @Inject()(@NamedDatabase("orders") ordersDatabase: Database,
+//                             databaseExecutionContext: DatabaseExecutionContext){
+//}

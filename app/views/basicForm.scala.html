@@ -5,14 +5,21 @@
   <h1>Scala Play forms tutorial</h1>
 
   @form(action = CSRF(routes.HomeController.simpleFormPost)) {
-    @inputText(taskForm("name"))
-
+    @inputText(taskForm("name"),'_showConstraints -> false)
+    @select(
+      field = taskForm("parent"),
+      options = tasks.map(task => task.name -> task.name),
+      '_showConstraints -> false
+    )
     <input type="submit" value="Add">
   }
 
-  @form(action = CSRF(routes.HomeController.simpleFormDel)) {
-    @inputText(taskDelForm("name"))
-
+  @form(action = CSRF(routes.HomeController.simpleFormPostDel)) {
+    @select(
+      field = taskDelForm("name"),
+      options = tasks.map(task => task.name -> task.name),
+      '_showConstraints -> false
+    )
     <input type="submit" value="Delete">
   }
 
@@ -20,9 +27,11 @@
   <h1>Task List</h1>
   <ul>
     @for(task <- tasks) {
-    <li>@task.name, @task.id</li>
+    <li>@task.name</li>
     }
   </ul>
+
 }
+
 
 

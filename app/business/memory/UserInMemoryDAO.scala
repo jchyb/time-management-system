@@ -19,17 +19,20 @@ class UserInMemoryDAO extends UserDAO {
     Future.successful(users.get(username))
   }
 
-  def addUser(username: String, password: String): Option[User] = {
+  def addUser(username: String, password: String): Future[Option[User]] = {
     val id = seq.incrementAndGet()
     if(users.contains(username)) {
-      Option.empty
+      Future.successful(Option.empty)
     } else {
       val user = User(id, username, password)
       users.put(username, user)
-      Option(user)
+      Future.successful(Option(user))
     }
   }
-  def deleteUser(username: String): Option[User] = {
-    users.remove(username)
+  def deleteUser(username: String): Future[Int] = {
+    Future.successful(users.remove(username) match{
+      case None => 1
+      case _ => 0
+    })
   }
 }

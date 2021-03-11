@@ -3,15 +3,15 @@ package models
 import business.memory.TaskInMemoryDAO
 import com.google.inject.ImplementedBy
 
-case class Task(userID: Long, name: String)
+import scala.concurrent.Future
+
+case class Task(userID: Long, name: String, parent: String)
 
 @ImplementedBy(classOf[TaskInMemoryDAO])
 trait TaskDAO {
-  def list(): List[Task]
-  def listByUser(userID: Long): List[Task]
-  def create(userID: Long, name: String): Option[Task]
-  def get(userID: Long, name: String): Option[Task]
-  def update(userID: Long, name: String): Option[Task]
-  def delete(userID: Long, name: String): Boolean
+  def listByUser(userID: Long): Future[List[Task]]
+  def create(userID: Long, name: String): Future[Option[Task]]
+  def get(userID: Long, name: String): Future[Option[Task]]
+  def delete(userID: Long, name: String): Future[Boolean]
 }
 

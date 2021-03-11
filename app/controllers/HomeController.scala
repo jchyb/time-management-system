@@ -32,21 +32,22 @@ class HomeController @Inject()(cc: ControllerComponents, val taskDAO: TaskDAO, v
   /////////////////////////// Forms - see routes on how to access
 
   def index(): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
-    Ok(views.html.index())
+    Redirect(routes.HomeController.login())
   }
 
   def simpleFormPost(): Action[AnyContent] = Action.async { implicit request =>
     withUser(user =>
       BasicForm.task.bindFromRequest().fold(
-        formWithErrors => {
-          Future.successful(
-            BadRequest(views.html.basicForm(formWithErrors, BasicForm.task, List(Task(0,"Any")) ++ taskDAO.listByUser(user.userID)))
+        formWithErrors =>
+          taskDAO.listByUser(user.userID).map( list =>
+            BadRequest(views.html.basicForm(formWithErrors, BasicForm.task, List(Task(0,"Any")) ++ list))
           )
-        },
+        ,
         formData => {
-          taskDAO.create(user.userID,formData.name)
-          Future.successful(
-            Ok(views.html.basicForm(BasicForm.task, BasicForm.task, List(Task(0,"Any")) ++ taskDAO.listByUser(user.userID)))
+          taskDAO.create(user.userID,formData.name).flatMap( _ =>
+            taskDAO.listByUser(user.userID)
+          ).map( list =>
+            Ok(views.html.basicForm(BasicForm.task, BasicForm.task, List(Task(0,"Any")) ++ list))
           )
         }
       )
@@ -56,23 +57,23 @@ class HomeController @Inject()(cc: ControllerComponents, val taskDAO: TaskDAO, v
     withUser(user =>
       BasicForm.task.bindFromRequest().fold(
         formWithErrors => {
-          Future.successful(
-            BadRequest(views.html.basicForm(BasicForm.task, formWithErrors, List(Task(0,"Any")) ++ taskDAO.listByUser(user.userID)))
+          taskDAO.listByUser(user.userID).map( list =>
+            BadRequest(views.html.basicForm(BasicForm.task, formWithErrors, List(Task(0,"Any")) ++ list))
           )
         },
         formData => {
           taskDAO.delete(user.userID, formData.name)
-          Future.successful(
-            Ok(views.html.basicForm(BasicForm.task, BasicForm.task, List(Task(0,"Any")) ++ taskDAO.listByUser(user.userID)))
+          taskDAO.listByUser(user.userID).map( list =>
+            Ok(views.html.basicForm(BasicForm.task, BasicForm.task, List(Task(0,"Any")) ++ list))
           )
         }
       )
     )(Future.successful(Redirect(routes.HomeController.login()).withSession("sessionToken" -> null)))
   }
-  def forms() = Action.async { implicit request: Request[AnyContent] =>
+  def forms(): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
     withUser{user =>
-      Future.successful(
-        Ok(views.html.basicForm(BasicForm.task, BasicForm.task, List(Task(0,"Any")) ++ taskDAO.listByUser(user.userID)))
+      taskDAO.listByUser(user.userID).map( list =>
+        Ok(views.html.basicForm(BasicForm.task, BasicForm.task, List(Task(0,"Any")) ++ list ))
       )
     }{
       Future.successful(Redirect(routes.HomeController.login()).withSession("sessionToken" -> null))
@@ -81,16 +82,16 @@ class HomeController @Inject()(cc: ControllerComponents, val taskDAO: TaskDAO, v
 
   /////////////////////////////////////////////////// Login
 
-  def login() = Action { implicit request =>
+  def login(): Action[AnyContent] = Action { implicit request =>
     Ok(views.html.login(null, BasicForm.login, BasicForm.register))
   }
 
-  def logout()  = Action.async { implicit request =>
+  def logout(): Action[AnyContent] = Action.async { implicit request =>
     sessionDAO.removeSession(request.session.get("sessionToken")).map(_ =>
       Redirect(routes.HomeController.login()).withSession("sessionToken" -> null))
   }
 
-  def loginPost() = Action.async { implicit request =>
+  def loginPost(): Action[AnyContent] = Action.async { implicit request =>
     BasicForm.login.bindFromRequest().fold(
       formWithErrors => {
         Future.successful(BadRequest(views.html.login(null,formWithErrors, BasicForm.register)))
@@ -100,12 +101,13 @@ class HomeController @Inject()(cc: ControllerComponents, val taskDAO: TaskDAO, v
       }
     )
   }
-  def registerPost() = Action.async { implicit request =>
+  def registerPost(): Action[AnyContent] = Action.async { implicit request =>
     BasicForm.register.bindFromRequest().fold(
       formWithErrors => {
         Future.successful(BadRequest(views.html.login(null, BasicForm.login, formWithErrors)))
       },
       formData => {
+        //TODO check if login exists!!!!!
         userDAO.addUser(formData.username, formData.password)
         Future.successful(
           Ok(views.html.login(List("Registration successful! Please login."), BasicForm.login, BasicForm.register)))
@@ -113,7 +115,7 @@ class HomeController @Inject()(cc: ControllerComponents, val taskDAO: TaskDAO, v
     )
   }
 
-  val logger = Logger(this.getClass())
+  val logger = Logger(this.getClass)
 
   def userLogin(username: String, password: String)(implicit request: Request[AnyContent]): Future[Result] = {
       userDAO.getUser(username).flatMap {
@@ -132,7 +134,7 @@ class HomeController @Inject()(cc: ControllerComponents, val taskDAO: TaskDAO, v
       }
   }
 
-  def priv() = Action.async { implicit request =>
+  def priv(): Action[AnyContent] = Action.async { implicit request =>
     withUser(user => Future.successful(Ok(views.html.priv(user.username))))(
       Future.successful(Unauthorized(views.html.defaultpages.unauthorized()))
     )

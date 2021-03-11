@@ -20,7 +20,6 @@ class Sessions(tag: Tag) extends Table[Session](tag, "SESSIONS") {
 }
 
 //TODO DatabaseExecutionContext
-@Singleton
 class SessionDbDAO @Inject()(@NamedDatabase("SESSIONS") ordersDatabase: Database,
                              protected val dbConfigProvider: DatabaseConfigProvider)(
   implicit executionContext: ExecutionContext)
@@ -28,17 +27,17 @@ class SessionDbDAO @Inject()(@NamedDatabase("SESSIONS") ordersDatabase: Database
 
   val sessions = TableQuery[Sessions]
 
-  override def getSession(token: String)(implicit c: ExecutionContext): Future[Option[Session]] = {
+  override def getSession(token: String): Future[Option[Session]] = {
     db.run (sessions.filter(_.token === token).take(1).result).map(seq => seq.head).mapTo[Option[Session]]
   }
 
-  override def generateToken(username: String)(implicit c: ExecutionContext): Future[String] = {
+  override def generateToken(username: String): Future[String] = {
     val token = s"$username-${UUID.randomUUID().toString}"
     db.run(sessions += Session(token, username, LocalDateTime.now(ZoneOffset.UTC).plusSeconds(30)))
       .map(_ => token)
   }
 
-  override def removeSession(maybeToken: Option[String])(implicit c: ExecutionContext): Future[Int] = {
+  override def removeSession(maybeToken: Option[String]): Future[Int] = {
     maybeToken match {
       case None => Future.successful(0)
       case Some(token) => db.run(sessions.filter(_.token === token).delete)

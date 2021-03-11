@@ -6,22 +6,22 @@ import java.util.UUID
 import models.{Session, SessionDAO}
 
 import scala.collection.mutable
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
 class SessionInMemoryDAO extends SessionDAO {
   private val sessions = mutable.Map.empty[String, Session]
 
-  def getSession(token: String)(implicit ex: ExecutionContext) : Future[Option[Session]] = {
-    Future{sessions.get(token)}
+  def getSession(token: String): Future[Option[Session]] = {
+    Future.successful(sessions.get(token))
   }
 
-  def generateToken(username: String)(implicit ex: ExecutionContext) : Future[String] = {
+  def generateToken(username: String): Future[String] = {
     val token = s"$username-${UUID.randomUUID().toString}"
     sessions.put(token, Session(token, username, LocalDateTime.now(ZoneOffset.UTC).plusSeconds(30)))
-    Future{token}
+    Future.successful(token)
   }
 
-  def removeSession(maybeToken: Option[String])(implicit ex: ExecutionContext): Future[Int] = maybeToken match {
+  def removeSession(maybeToken: Option[String]): Future[Int] = maybeToken match {
     case Some(token) => Future.successful(sessions.remove(token).fold(0)(_=> 1))
     case None => Future.successful(0)
   }

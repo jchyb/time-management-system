@@ -5,17 +5,17 @@ import java.util.concurrent.atomic.AtomicLong
 import models.{User, UserDAO}
 
 import scala.collection.mutable
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
 
 class UserInMemoryDAO extends UserDAO {
   private val seq = new AtomicLong
 
   private val users = mutable.Map(
-    "admin" -> User(0,"admin", "pass")
+    "admin" -> User("admin", "pass",0)
   )
 
-  def getUser(username: String)(implicit c: ExecutionContext): Future[Option[User]] = {
+  def getUser(username: String): Future[Option[User]] = {
     Future.successful(users.get(username))
   }
 
@@ -24,7 +24,7 @@ class UserInMemoryDAO extends UserDAO {
     if(users.contains(username)) {
       Future.successful(Option.empty)
     } else {
-      val user = User(id, username, password)
+      val user = User(username, password, id)
       users.put(username, user)
       Future.successful(Option(user))
     }

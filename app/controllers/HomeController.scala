@@ -40,14 +40,14 @@ class HomeController @Inject()(cc: ControllerComponents, val taskDAO: TaskDAO, v
       BasicForm.task.bindFromRequest().fold(
         formWithErrors =>
           taskDAO.listByUser(user.userID).map( list =>
-            BadRequest(views.html.basicForm(formWithErrors, BasicForm.task, List(Task(0,"Any")) ++ list))
+            BadRequest(views.html.basicForm(formWithErrors, BasicForm.task, List(Task(0,"Any","Any")) ++ list))
           )
         ,
         formData => {
           taskDAO.create(user.userID,formData.name).flatMap( _ =>
             taskDAO.listByUser(user.userID)
           ).map( list =>
-            Ok(views.html.basicForm(BasicForm.task, BasicForm.task, List(Task(0,"Any")) ++ list))
+            Ok(views.html.basicForm(BasicForm.task, BasicForm.task, List(Task(0,"Any","Any")) ++ list))
           )
         }
       )
@@ -58,13 +58,13 @@ class HomeController @Inject()(cc: ControllerComponents, val taskDAO: TaskDAO, v
       BasicForm.task.bindFromRequest().fold(
         formWithErrors => {
           taskDAO.listByUser(user.userID).map( list =>
-            BadRequest(views.html.basicForm(BasicForm.task, formWithErrors, List(Task(0,"Any")) ++ list))
+            BadRequest(views.html.basicForm(BasicForm.task, formWithErrors, List(Task(0,"Any","Any")) ++ list))
           )
         },
         formData => {
           taskDAO.delete(user.userID, formData.name)
           taskDAO.listByUser(user.userID).map( list =>
-            Ok(views.html.basicForm(BasicForm.task, BasicForm.task, List(Task(0,"Any")) ++ list))
+            Ok(views.html.basicForm(BasicForm.task, BasicForm.task, List(Task(0,"Any","Any")) ++ list))
           )
         }
       )
@@ -73,7 +73,7 @@ class HomeController @Inject()(cc: ControllerComponents, val taskDAO: TaskDAO, v
   def forms(): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
     withUser{user =>
       taskDAO.listByUser(user.userID).map( list =>
-        Ok(views.html.basicForm(BasicForm.task, BasicForm.task, List(Task(0,"Any")) ++ list ))
+        Ok(views.html.basicForm(BasicForm.task, BasicForm.task, List(Task(0,"Any","Any")) ++ list ))
       )
     }{
       Future.successful(Redirect(routes.HomeController.login()).withSession("sessionToken" -> null))

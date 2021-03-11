@@ -24,7 +24,7 @@ class UserDbDAO @Inject()(@NamedDatabase("USERS") ordersDatabase: Database,
 
   val users = TableQuery[Users]
 
-  override def getUser(username: String)(implicit ex: ExecutionContext): Future[Option[User]] = db.run(
+  override def getUser(username: String): Future[Option[User]] = db.run(
     users.filter(_.username === username).take(1).result).map(seq =>
       if(seq.isEmpty) None
       else Option(seq.head) ).mapTo[Option[User]]

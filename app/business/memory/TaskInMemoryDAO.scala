@@ -14,15 +14,10 @@ class TaskInMemoryDAO extends TaskDAO{
     Future.successful(tasks.filter(_._2.userID == userID).values.toList)
   }
   def create(userID: Long, name: String): Future[Option[Task]] = {
-    val item = Task(userID, name)
+    val item = Task(userID, name, "Any")
     tasks.put(name, item)
     Future.successful(Some(item))
   }
   def get(userID: Long, name: String): Future[Option[Task]] = Future.successful(tasks.get(name))
-  def update(userID: Long, name: String): Future[Option[Task]] = {
-    val item = Task(userID, name)
-    tasks.replace(name, item)
-    Future.successful(Some(item))
-  }
   def delete(userID: Long, name: String): Future[Boolean] = Future.successful(tasks.remove(name).isDefined)
 }

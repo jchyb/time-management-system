@@ -5,7 +5,6 @@ import java.util.UUID
 import javax.inject.Inject
 import models.{Session, SessionDAO}
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
-import play.db.NamedDatabase
 import slick.jdbc.JdbcProfile
 import slick.jdbc.PostgresProfile.api._
 
@@ -20,8 +19,7 @@ class Sessions(tag: Tag) extends Table[Session](tag, "SESSIONS") {
 }
 
 //TODO DatabaseExecutionContext
-class SessionDbDAO @Inject()(@NamedDatabase("SESSIONS") ordersDatabase: Database,
-                             protected val dbConfigProvider: DatabaseConfigProvider)(
+class SessionDbDAO @Inject()(protected val dbConfigProvider: DatabaseConfigProvider)(
   implicit executionContext: ExecutionContext)
   extends SessionDAO with HasDatabaseConfigProvider[JdbcProfile] {
 

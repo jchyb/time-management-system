@@ -18,8 +18,7 @@ class Tasks(tag: Tag) extends Table[Task](tag, "TASKS") {
   def * = (userID, taskname, parent) <> (Task.tupled,  Task.unapply)
 }
 
-class TaskDbDAO @Inject()(@NamedDatabase("TASKS") ordersDatabase: Database,
-                          protected val dbConfigProvider: DatabaseConfigProvider)(
+class TaskDbDAO @Inject()(protected val dbConfigProvider: DatabaseConfigProvider)(
                            implicit executionContext: ExecutionContext)
   extends TaskDAO with HasDatabaseConfigProvider[JdbcProfile]{
 

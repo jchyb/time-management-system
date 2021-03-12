@@ -17,8 +17,7 @@ class Users(tag: Tag) extends Table[User](tag, "USERS") {
   def * = (username, password, userID) <> (User.tupled,  User.unapply)
 }
 
-class UserDbDAO @Inject()(@NamedDatabase("USERS") ordersDatabase: Database,
-                         protected val dbConfigProvider: DatabaseConfigProvider)(
+class UserDbDAO @Inject()(protected val dbConfigProvider: DatabaseConfigProvider)(
   implicit executionContext: ExecutionContext)
   extends UserDAO with HasDatabaseConfigProvider[JdbcProfile]{
 

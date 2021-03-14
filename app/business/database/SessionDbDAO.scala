@@ -7,6 +7,7 @@ import models.{Session, SessionDAO}
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import slick.jdbc.JdbcProfile
 import slick.jdbc.PostgresProfile.api._
+import javax.inject.Singleton
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -19,6 +20,7 @@ class Sessions(tag: Tag) extends Table[Session](tag, "SESSIONS") {
 }
 
 //TODO DatabaseExecutionContext
+@Singleton
 class SessionDbDAO @Inject()(protected val dbConfigProvider: DatabaseConfigProvider)(
   implicit executionContext: ExecutionContext)
   extends SessionDAO with HasDatabaseConfigProvider[JdbcProfile] {

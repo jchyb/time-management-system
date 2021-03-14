@@ -1,18 +1,16 @@
 package business.memory
 
-import java.util.concurrent.atomic.AtomicLong
-
+import javax.inject.Singleton
 import models.{User, UserDAO}
 
 import scala.collection.mutable
 import scala.concurrent.Future
 
-
+@Singleton
 class UserInMemoryDAO extends UserDAO {
-  private val seq = new AtomicLong
 
   private val users = mutable.Map(
-    "admin" -> User("admin", "pass",0)
+    "admin" -> User("admin", "pass")
   )
 
   def getUser(username: String): Future[Option[User]] = {
@@ -20,11 +18,10 @@ class UserInMemoryDAO extends UserDAO {
   }
 
   def addUser(username: String, password: String): Future[Option[User]] = {
-    val id = seq.incrementAndGet()
     if(users.contains(username)) {
       Future.successful(Option.empty)
     } else {
-      val user = User(username, password, id)
+      val user = User(username, password)
       users.put(username, user)
       Future.successful(Option(user))
     }

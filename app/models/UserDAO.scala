@@ -2,7 +2,7 @@ package models
 
 import scala.concurrent.Future
 
-case class User(username: String, password: String, userID: Long = 0L)
+case class User(username: String, password: String)
 
 trait UserDAO {
   def getUser(username: String): Future[Option[User]]

@@ -7,7 +7,9 @@ import models.{Session, SessionDAO}
 
 import scala.collection.mutable
 import scala.concurrent.Future
+import javax.inject.Singleton
 
+@Singleton
 class SessionInMemoryDAO extends SessionDAO {
   private val sessions = mutable.Map.empty[String, Session]
 

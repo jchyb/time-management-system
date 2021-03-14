@@ -1,23 +1,24 @@
 package business.memory
 
-import scala.concurrent.Future
-import java.util.concurrent.atomic.AtomicLong
+import javax.inject.Singleton
 import models.{Task, TaskDAO}
-import scala.collection.concurrent.TrieMap
 
+import scala.collection.concurrent.TrieMap
+import scala.concurrent.Future
+
+@Singleton
 class TaskInMemoryDAO extends TaskDAO{
 
   private val tasks = TrieMap.empty[String, Task]
-  private val seq = new AtomicLong
 
-  def listByUser(userID: Long): Future[List[Task]] = {
-    Future.successful(tasks.filter(_._2.userID == userID).values.toList)
+  def listByUser(username: String): Future[List[Task]] = {
+    Future.successful(tasks.filter(_._2.username == username).values.toList)
   }
-  def create(userID: Long, name: String): Future[Option[Task]] = {
-    val item = Task(userID, name, "Any")
+  def create(username: String, name: String): Future[Option[Task]] = {
+    val item = Task(username, name, "Any")
     tasks.put(name, item)
     Future.successful(Some(item))
   }
-  def get(userID: Long, name: String): Future[Option[Task]] = Future.successful(tasks.get(name))
-  def delete(userID: Long, name: String): Future[Boolean] = Future.successful(tasks.remove(name).isDefined)
+  def get(username: String, name: String): Future[Option[Task]] = Future.successful(tasks.get(name))
+  def delete(username: String, name: String): Future[Boolean] = Future.successful(tasks.remove(name).isDefined)
 }

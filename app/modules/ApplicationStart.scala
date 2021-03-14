@@ -8,7 +8,7 @@ import play.api.inject.ApplicationLifecycle
 import slick.jdbc.JdbcProfile
 import slick.lifted.TableQuery
 
-class ApplicationClass @Inject()(lifecycle: ApplicationLifecycle, protected val dbConfigProvider: DatabaseConfigProvider)(
+class ApplicationStart @Inject()(lifecycle: ApplicationLifecycle, protected val dbConfigProvider: DatabaseConfigProvider)(
   implicit executionContext: ExecutionContext) extends HasDatabaseConfigProvider[JdbcProfile] {
 
   //create table

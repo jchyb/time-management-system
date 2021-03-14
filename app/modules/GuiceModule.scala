@@ -18,7 +18,7 @@ class GuiceModule (environment: Environment, configuration: Configuration) exten
       bind(classOf[TaskDAO]).to(classOf[TaskDbDAO])
       bind(classOf[UserDAO]).to(classOf[UserDbDAO])
 
-      bind(classOf[ApplicationStart]).asEagerSingleton()
+      //bind(classOf[ApplicationStart]).asEagerSingleton()
     }
   }
 }

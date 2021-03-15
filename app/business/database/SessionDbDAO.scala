@@ -28,7 +28,7 @@ class SessionDbDAO @Inject()(protected val dbConfigProvider: DatabaseConfigProvi
   val sessions = TableQuery[Sessions]
 
   override def getSession(token: String): Future[Option[Session]] = {
-    db.run (sessions.filter(_.token === token).take(1).result).map(seq => seq.head).mapTo[Option[Session]]
+    db.run (sessions.filter(_.token === token).take(1).result.headOption)
   }
 
   override def generateToken(username: String): Future[String] = {

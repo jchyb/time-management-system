@@ -34,9 +34,8 @@ class TaskDbDAO @Inject()(protected val dbConfigProvider: DatabaseConfigProvider
   }.map(v => if(v>0) Some(Task(username, name, "Any")) else None)
 
   override def get(username: String, name: String): Future[Option[Task]] = db.run{
-    tasks.filter(t => t.username === username && t.taskname === name).take(1).result
-  }.map(_.head).mapTo[Option[Task]]
-  //TODO ?????
+    tasks.filter(t => t.username === username && t.taskname === name).take(1).result.headOption
+  }
 
   override def delete(username: String, name: String): Future[Boolean] = db.run{
     tasks.filter(t => t.username === username && t.taskname === name ).delete

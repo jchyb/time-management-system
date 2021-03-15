@@ -24,9 +24,7 @@ class UserDbDAO @Inject()(protected val dbConfigProvider: DatabaseConfigProvider
   val users = TableQuery[Users]
 
   override def getUser(username: String): Future[Option[User]] = db.run(
-    users.filter(_.username === username).take(1).result).map(seq =>
-      if(seq.isEmpty) None
-      else Option(seq.head) ).mapTo[Option[User]]
+    users.filter(_.username === username).take(1).result.headOption)
 
   override def addUser(username: String, password: String): Future[Option[User]] = {
     db.run(users += User(username, password)).map(_ =>

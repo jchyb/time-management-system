@@ -13,11 +13,11 @@ class UserInMemoryDAO extends UserDAO {
     "admin" -> User("admin", "pass")
   )
 
-  def getUser(username: String): Future[Option[User]] = {
+  override def getUser(username: String): Future[Option[User]] = {
     Future.successful(users.get(username))
   }
 
-  def addUser(username: String, password: String): Future[Option[User]] = {
+  override def addUser(username: String, password: String): Future[Option[User]] = {
     if(users.contains(username)) {
       Future.successful(Option.empty)
     } else {
@@ -26,7 +26,7 @@ class UserInMemoryDAO extends UserDAO {
       Future.successful(Option(user))
     }
   }
-  def deleteUser(username: String): Future[Int] = {
+  override def deleteUser(username: String): Future[Int] = {
     Future.successful(users.remove(username) match{
       case None => 1
       case _ => 0

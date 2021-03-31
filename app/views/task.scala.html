@@ -1,0 +1,59 @@
+@import helper._
+@(taskForm: Form[TaskForm], taskDelForm: Form[TaskForm], tasks: List[Task])(implicit request: RequestHeader, messages: Messages)
+
+@main("Task Timer - Edit") {
+  @bar("","active","")
+  <div class="container border col-10">
+    <div class="row">
+      <div class="col border pt-2 pb-2">
+        <h3>Add Task</h3>
+        @form(action = CSRF(routes.DeckController.simpleFormPost())) {
+          @inputText(taskForm("name"), '_label -> "Task Name:", '_showConstraints -> false)
+          @select(
+            field = taskForm("parent"),
+            options = tasks.map(task => task.name -> task.name),
+            '_label -> "Parent:",
+            '_showConstraints -> false
+          )
+          <input type="submit" value="Add">
+        }
+      </div>
+
+      <div class="col border pt-2 pb-2">
+        <h3>Delete Task</h3>
+        @form(action = CSRF(routes.DeckController.simpleFormPostDel())) {
+          @select(
+            field = taskDelForm("name"),
+            options = tasks.map(task => task.name -> task.name),
+            '_label -> "Task:"
+          )
+          <input type="submit" value="Delete">
+        }
+      </div>
+
+      <div class="col border pt-2 pb-2">
+        <h3>Task List</h3>
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Task Name</th>
+              <th>Parent Name</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for(task <- tasks) {
+            <tr>
+              <td>@task.name</td>
+              <td>@task.parent</td>
+            </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+  </div>
+}
+
+
+

@@ -29,9 +29,9 @@ class TaskDbDAO @Inject()(protected val dbConfigProvider: DatabaseConfigProvider
     tasks.filter(_.username === username).result
   }.map(_.toList)
 
-  override def create(username: String, name: String): Future[Option[Task]] = db.run{
-    tasks += Task(username, name, "Any")
-  }.map(v => if(v>0) Some(Task(username, name, "Any")) else None)
+  override def create(username: String, name: String, parent: String): Future[Option[Task]] = db.run{
+    tasks += Task(username, name, parent)
+  }.map(v => if(v>0) Some(Task(username, name, parent)) else None)
 
   override def get(username: String, name: String): Future[Option[Task]] = db.run{
     tasks.filter(t => t.username === username && t.taskname === name).take(1).result.headOption

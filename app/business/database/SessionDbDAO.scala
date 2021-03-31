@@ -29,7 +29,7 @@ class SessionDbDAO @Inject()(protected val dbConfigProvider: DatabaseConfigProvi
 
   override def getSession(token: String): Future[Option[Session]] = {
     db.run (sessions.filter(_.token === token).take(1).result.headOption)
-  }
+  } // TODO fix
 
   override def generateToken(username: String): Future[String] = {
     val token = s"$username-${UUID.randomUUID().toString}"

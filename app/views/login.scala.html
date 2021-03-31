@@ -9,18 +9,18 @@
 
 <div class="absolute-center">
 <div class="row">
-    <div class="container pt-1 pb-1 border col-5">
-    <h2>Login:</h2>
-    @form(action = CSRF(routes.HomeController.loginPost)) {
-        @inputText(registerForm("username"),'_label -> "username:",'_showConstraints -> false)
-        @inputText(registerForm("password"),'_label -> "password:",'_showConstraints -> false)
-        <input type="submit" value="Submit">
-    }
+    <div class="container pt-2 pb-2 border col-5">
+        <h2>Login:</h2>
+        @form(action = CSRF(routes.LoginController.loginPost())) {
+            @inputText(registerForm("username"),'_label -> "username:",'_showConstraints -> false)
+            @inputText(registerForm("password"),'_label -> "password:",'_showConstraints -> false)
+            <input type="submit" value="Submit">
+        }
     </div>
 
-    <div class="container pt-1 pb-1 border col-5">
+    <div class="container pt-2 pb-2 border col-5">
     <h2>Register:</h2>
-    @form(action = CSRF(routes.HomeController.registerPost)) {
+    @form(action = CSRF(routes.LoginController.registerPost())) {
         @inputText(registerForm("username"),'_label -> "username:",'_showConstraints -> false)
         @inputText(registerForm("password"),'_label -> "password:",'_showConstraints -> false)
         <input type="submit" value="Submit">

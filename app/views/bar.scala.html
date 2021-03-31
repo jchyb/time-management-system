@@ -1,0 +1,26 @@
+@import helper._
+
+@(active1: String, active2: String, active3: String)(implicit request: RequestHeader, messages: Messages)
+<nav class="navbar navbar-expand-sm navbar-light bg-light">
+    <a class="navbar-brand">Task Timer</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto" >
+            <li class="nav-item @active1">
+                <a class="nav-link" href=@routes.DeckController.time()>Time</a>
+            </li>
+            <li class="nav-item @active2">
+                <a class="nav-link" href=@routes.DeckController.task()>Task</a>
+            </li>
+            <li class="nav-item @active3">
+                <a class="nav-link" href=@routes.DeckController.stat()>Stat</a>
+            </li>
+        </ul>
+        @form(action = CSRF(routes.LoginController.logout())){
+            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Log Out</button>
+        }
+    </div>
+</nav>

@@ -1,5 +1,5 @@
 package modules
-import business.database.{Sessions, Tasks, Users}
+import business.database.{Sessions, Tasks, TimesBegin, TimesEnd, Users}
 
 import scala.concurrent.{ExecutionContext, Future}
 import javax.inject._
@@ -18,7 +18,14 @@ class ApplicationStart @Inject()(lifecycle: ApplicationLifecycle, protected val 
   val users = TableQuery[Users]
   val tasks = TableQuery[Tasks]
 
-  db.run((sessions.schema ++ users.schema ++ tasks.schema).createIfNotExists)
+  val timesBegin = TableQuery[TimesBegin]
+  val timesEnd = TableQuery[TimesEnd]
+
+  db.run(sessions.schema.createIfNotExists)
+    .flatMap(_ => db.run(users.schema.createIfNotExists))
+    .flatMap(_ => db.run(tasks.schema.createIfNotExists))
+    .flatMap(_ => db.run(timesBegin.schema.createIfNotExists))
+    .flatMap(_ => db.run(timesEnd.schema.createIfNotExists))
 
 
   // Shut-down hook

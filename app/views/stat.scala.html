@@ -1,0 +1,29 @@
+@import helper._
+@(spans: List[TimeSpan])(implicit request: RequestHeader, messages: Messages)
+
+@main("Task Timer - Stat") {
+    @bar("","","active")
+
+    <div class="col border">
+        <h3>Task List</h3>
+        <table class="table">
+            <thead>
+            <tr>
+                <th>Task</th>
+                <th>Start</th>
+                <th>End</th>
+            </tr>
+            </thead>
+            <tbody>
+            @for(span <- spans) {
+            <tr>
+                <td>@span.taskName</td>
+                <td>@span.timeBegin</td>
+                <td>@span.timeEnd</td>
+            </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+
+}

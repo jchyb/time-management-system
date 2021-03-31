@@ -60,14 +60,11 @@ class TimeInMemoryDAO extends TimeDAO{
     logger.info("begin:" + lastBegin)
     logger.info("end:" + lastEnd)
     if(lastBegin.isEmpty) {
-      logger.info("Found: " + true + " " + lastBegin.toString) //TODO remove
       return Future.successful((true, lastBegin))
     }
     if(lastEnd.flatMap(e => lastBegin.map(b => b.timeID == e.timeID)).getOrElse(false)) {
-      logger.info("Found: " + true + " " + lastEnd.toString) //TODO remove
       return Future.successful((true, lastEnd))
     }
-    logger.info("Found: " + false + " " + lastBegin.toString) //TODO remove
     Future.successful((false, lastBegin))
   }
 

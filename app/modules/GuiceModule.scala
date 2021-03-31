@@ -16,12 +16,12 @@ class GuiceModule (environment: Environment, configuration: Configuration) exten
       bind(classOf[TimeDAO]).to(classOf[TimeInMemoryDAO])
 
     } else {
+      bind(classOf[ApplicationStart]).asEagerSingleton()
+
       bind(classOf[SessionDAO]).to(classOf[SessionDbDAO])
       bind(classOf[TaskDAO]).to(classOf[TaskDbDAO])
       bind(classOf[UserDAO]).to(classOf[UserDbDAO])
       bind(classOf[TimeDAO]).to(classOf[TimeDbDAO])
-
-      bind(classOf[ApplicationStart]).asEagerSingleton()
     }
   }
 }

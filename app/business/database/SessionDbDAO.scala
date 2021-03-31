@@ -19,7 +19,7 @@ class Sessions(tag: Tag) extends Table[Session](tag, "SESSIONS") {
   def * = (token, username, expiration) <> (Session.tupled,  Session.unapply)
 }
 
-//TODO DatabaseExecutionContext
+//TODO DatabaseExecutionContext ?
 @Singleton
 class SessionDbDAO @Inject()(protected val dbConfigProvider: DatabaseConfigProvider)(
   implicit executionContext: ExecutionContext)

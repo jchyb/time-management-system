@@ -17,25 +17,15 @@ class TimesBegin(tag: Tag) extends Table[Time](tag, "TIMES_BEGIN") {
   def userName   = column[String]("USERNAME")
 
   def * = (timeID, timeStamp, taskName, userName) <> (Time.tupled,  Time.unapply)
-
-  implicit val instantColumnType: BaseColumnType[Instant] =
-    MappedColumnType.base[Instant, Timestamp](
-      instant => Timestamp.from(instant),
-      ts => ts.toInstant
-    )
 }
+
 class TimesEnd(tag: Tag) extends Table[TimeEnd](tag, "TIMES_END") {
   def timeID   = column[Long]("ID", O.PrimaryKey, O.Unique)
   def timeStamp = column[Instant]("TIME_STAMP")
 
   def * = (timeID, timeStamp) <> (TimeEnd.tupled,  TimeEnd.unapply)
-
-  implicit val instantColumnType: BaseColumnType[Instant] =
-    MappedColumnType.base[Instant, Timestamp](
-      instant => Timestamp.from(instant),
-      ts => ts.toInstant
-    )
 }
+
 @Singleton
 class TimeDbDAO @Inject()(protected val dbConfigProvider: DatabaseConfigProvider)(
   implicit executionContext: ExecutionContext) extends TimeDAO with HasDatabaseConfigProvider[JdbcProfile]{
@@ -90,7 +80,6 @@ class TimeDbDAO @Inject()(protected val dbConfigProvider: DatabaseConfigProvider
           case None => (true, Option(begin))
         }
     }
-
   }
 
   override def getAllTimes(username: String): Future[List[TimeSpan]] = {

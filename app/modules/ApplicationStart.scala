@@ -22,10 +22,10 @@ class ApplicationStart @Inject()(lifecycle: ApplicationLifecycle, protected val 
   val timesEnd = TableQuery[TimesEnd]
 
   db.run(sessions.schema.createIfNotExists)
-    .flatMap(_ => db.run(users.schema.createIfNotExists))
-    .flatMap(_ => db.run(tasks.schema.createIfNotExists))
-    .flatMap(_ => db.run(timesBegin.schema.createIfNotExists))
-    .flatMap(_ => db.run(timesEnd.schema.createIfNotExists))
+  db.run(users.schema.createIfNotExists)
+  db.run(tasks.schema.createIfNotExists)
+  db.run(timesBegin.schema.createIfNotExists)
+  db.run(timesEnd.schema.createIfNotExists)
 
   // Shut-down hook
   lifecycle.addStopHook { () =>

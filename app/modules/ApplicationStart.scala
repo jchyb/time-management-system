@@ -27,7 +27,6 @@ class ApplicationStart @Inject()(lifecycle: ApplicationLifecycle, protected val 
     .flatMap(_ => db.run(timesBegin.schema.createIfNotExists))
     .flatMap(_ => db.run(timesEnd.schema.createIfNotExists))
 
-
   // Shut-down hook
   lifecycle.addStopHook { () =>
     Future.successful(())

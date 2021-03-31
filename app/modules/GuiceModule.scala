@@ -1,6 +1,6 @@
 package modules
 
-import business.database.{SessionDbDAO, TaskDbDAO, TimeDbDAO, UserDbDAO}
+import business.database._
 import business.memory.{SessionInMemoryDAO, TaskInMemoryDAO, TimeInMemoryDAO, UserInMemoryDAO}
 import com.google.inject.AbstractModule
 import models.{SessionDAO, TaskDAO, TimeDAO, UserDAO}

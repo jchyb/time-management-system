@@ -4,6 +4,7 @@ import java.time.Instant
 
 import javax.inject.{Inject, Singleton}
 import models.{Time, TimeDAO, TimeEnd, TimeSpan}
+import play.api.Logger
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import slick.jdbc.JdbcProfile
 import slick.jdbc.PostgresProfile.api._
@@ -32,10 +33,11 @@ class TimeDbDAO @Inject()(protected val dbConfigProvider: DatabaseConfigProvider
 
   val timesBegin = TableQuery[TimesBegin]
   val timesEnd = TableQuery[TimesEnd]
-
+  val logger = Logger(this.getClass())
   override def putTime(isBegin: Boolean, timeStamp: Instant, taskName: String, username: String): Future[Unit] = {
     if(isBegin){
-      db.run(timesBegin += Time(0, timeStamp, taskName, username)).map(_ => {})
+      (timesBegin += Time(0, timeStamp, taskName, username)).statements.foreach(logger.info(_))
+      db.run((timesBegin += Time(0, timeStamp, taskName, username))).map(_ => {})
     } else {
       db.run(
         timesBegin.filter(a => a.taskName === taskName && a.userName === a.userName)

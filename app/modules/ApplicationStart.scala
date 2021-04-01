@@ -21,11 +21,16 @@ class ApplicationStart @Inject()(lifecycle: ApplicationLifecycle, protected val 
   val timesBegin = TableQuery[TimesBegin]
   val timesEnd = TableQuery[TimesEnd]
 
-  db.run(sessions.schema.createIfNotExists)
-  db.run(users.schema.createIfNotExists)
-  db.run(tasks.schema.createIfNotExists)
-  db.run(timesBegin.schema.createIfNotExists)
-  db.run(timesEnd.schema.createIfNotExists)
+
+  val createAll = DBIO.seq(
+    sessions.schema.createIfNotExists,
+    users.schema.createIfNotExists,
+    tasks.schema.createIfNotExists,
+    timesBegin.schema.createIfNotExists,
+    timesEnd.schema.createIfNotExists
+  )
+
+  db.run(createAll)
 
   // Shut-down hook
   lifecycle.addStopHook { () =>

@@ -1,12 +1,12 @@
 package business.database
 
 import java.time.Instant
+
 import javax.inject.{Inject, Singleton}
 import models.{Time, TimeDAO, TimeEnd, TimeSpan}
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import slick.jdbc.JdbcProfile
 import slick.jdbc.PostgresProfile.api._
-import java.sql.Timestamp
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -33,22 +33,14 @@ class TimeDbDAO @Inject()(protected val dbConfigProvider: DatabaseConfigProvider
   val timesBegin = TableQuery[TimesBegin]
   val timesEnd = TableQuery[TimesEnd]
 
-  implicit val instantColumnType: BaseColumnType[Instant] =
-    MappedColumnType.base[Instant, Timestamp](
-      instant => Timestamp.from(instant),
-      ts => ts.toInstant
-    )
-
   override def putTime(isBegin: Boolean, timeStamp: Instant, taskName: String, username: String): Future[Unit] = {
     if(isBegin){
-      db.run((timesBegin returning timesBegin.map(_.timeID)) += Time(0, timeStamp, taskName, username))
-        .map(id => Option(Time(id, timeStamp, taskName, username)))
+      db.run(timesBegin += Time(0, timeStamp, taskName, username)).map(_ => {})
     } else {
-      //?????????????????
       db.run(
         timesBegin.filter(a => a.taskName === taskName && a.userName === a.userName)
         .sortBy(_.timeStamp).result.headOption
-          .map(_.map(begin =>
+          .map(_.map( begin =>
             (timesEnd returning timesEnd) += TimeEnd(begin.timeID, timeStamp))
           )
       )
@@ -56,7 +48,9 @@ class TimeDbDAO @Inject()(protected val dbConfigProvider: DatabaseConfigProvider
   }
 
   override def removeLatestBegin(username: String): Future[Boolean] = {
-    db.run(timesBegin.filter(_.userName === username)
+    db.run(
+      timesBegin
+      .filter(_.userName === username)
       .sortBy(_.timeStamp).take(1).delete
     ).map( _ > 0 )
   }
@@ -81,7 +75,7 @@ class TimeDbDAO @Inject()(protected val dbConfigProvider: DatabaseConfigProvider
       case None => (true, None)
       case Some((begin, maybeEnd)) =>
         maybeEnd match {
-          case Some(value) => (true, Option(Time(0, value.timeStamp, begin.taskName, begin.username)))
+          case Some(end) => (true, Option(Time(0, end.timeStamp, begin.taskName, begin.username)))
           case None => (false, Option(begin))
         }
     }

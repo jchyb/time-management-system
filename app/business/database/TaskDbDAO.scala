@@ -11,11 +11,13 @@ import javax.inject.Singleton
 import scala.concurrent.{ExecutionContext, Future}
 
 class Tasks(tag: Tag) extends Table[Task](tag, "TASKS") {
-  def username   = column[String]("USERNAME", O.PrimaryKey)
-  def taskname = column[String]("NAME", O.Unique, O.PrimaryKey)
+  def username   = column[String]("USERNAME")
+  def taskname = column[String]("NAME")
   def parent   = column[String]("PARENT_NAME")
 
   def * = (username, taskname, parent) <> (Task.tupled,  Task.unapply)
+
+  def pk = primaryKey("pk_a", (username, taskname))
 }
 
 @Singleton

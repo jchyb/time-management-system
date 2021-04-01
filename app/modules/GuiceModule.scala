@@ -9,7 +9,7 @@ import play.api.{Configuration, Environment, Mode}
 class GuiceModule (environment: Environment, configuration: Configuration) extends AbstractModule {
 
   override def configure() = {
-    if(environment.mode == Mode.Dev) {
+    if(environment.mode == Mode.Prod) {
       bind(classOf[SessionDAO]).to(classOf[SessionInMemoryDAO])
       bind(classOf[TaskDAO]).to(classOf[TaskInMemoryDAO])
       bind(classOf[UserDAO]).to(classOf[UserInMemoryDAO])

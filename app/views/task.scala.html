@@ -5,7 +5,7 @@
   @bar("","active","")
   <div class="container border col-10">
     <div class="row">
-      <div class="col border pt-4 pb-4">
+      <div class="col border pt-3 pb-3">
         <h3>Add Task</h3>
         @form(action = CSRF(routes.DeckController.simpleFormPost())) {
           @inputText(taskForm("name"), '_label -> "Task Name:", '_showConstraints -> false)
@@ -19,7 +19,7 @@
         }
       </div>
 
-      <div class="col border pt-4 pb-4">
+      <div class="col border pt-3 pb-3">
         <h3>Delete Task</h3>
         @form(action = CSRF(routes.DeckController.simpleFormPostDel())) {
           @select(
@@ -31,7 +31,7 @@
         }
       </div>
 
-      <div class="col border pt-4 pb-4">
+      <div class="col border pt-3 pb-3">
         <h3>Task List</h3>
         <table class="table">
           <thead>

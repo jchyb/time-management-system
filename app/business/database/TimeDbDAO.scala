@@ -73,11 +73,11 @@ class TimeDbDAO @Inject()(protected val dbConfigProvider: DatabaseConfigProvider
       .sortBy(_._1.timeStamp)
       .result.headOption
     ).map{
-      case None => (false, Option.empty)
+      case None => (true, None)
       case Some((begin, maybeEnd)) =>
         maybeEnd match {
-          case Some(value) => (false, Option(begin))
-          case None => (true, Option(begin))
+          case Some(value) => (true, Option(Time(0, value.timeStamp, begin.taskName, begin.username)))
+          case None => (false, Option(begin))
         }
     }
   }

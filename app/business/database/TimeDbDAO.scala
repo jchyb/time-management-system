@@ -39,14 +39,19 @@ class TimeDbDAO @Inject()(protected val dbConfigProvider: DatabaseConfigProvider
       ts => ts.toInstant
     )
 
-  override def putTime(isBegin: Boolean, timeStamp: Instant, taskName: String, username: String): Future[Option[Time]] = {
+  override def putTime(isBegin: Boolean, timeStamp: Instant, taskName: String, username: String): Future[Unit] = {
     if(isBegin){
       db.run((timesBegin returning timesBegin.map(_.timeID)) += Time(0, timeStamp, taskName, username))
         .map(id => Option(Time(id, timeStamp, taskName, username)))
     } else {
-      db.run(timesBegin.filter(a => a.taskName === taskName && a.userName === a.userName)
-        .sortBy(_.timeStamp).result)
-        .map(_.headOption)
+      //?????????????????
+      db.run(
+        timesBegin.filter(a => a.taskName === taskName && a.userName === a.userName)
+        .sortBy(_.timeStamp).result.headOption
+          .map(_.map(begin =>
+            (timesEnd returning timesEnd) += TimeEnd(begin.timeID, timeStamp))
+          )
+      )
     }
   }
 

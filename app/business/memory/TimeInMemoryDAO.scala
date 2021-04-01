@@ -20,7 +20,7 @@ class TimeInMemoryDAO extends TimeDAO{
   val timesEnd: TrieMap[Long, Time] = TrieMap.empty[Long, Time]
 
   override def putTime(isBegin: Boolean, timeStamp: Instant,
-                       taskName: String, username: String): Future[Option[Time]] = {
+                       taskName: String, username: String): Future[Unit] = {
 
     if(isBegin) {
       val id = seq.getAndIncrement()

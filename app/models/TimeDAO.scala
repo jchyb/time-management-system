@@ -8,7 +8,7 @@ case class TimeEnd(timeID: Long, timeStamp: Instant)
 case class TimeSpan(timeID: Long, timeBegin: Instant, timeEnd: Instant, taskName: String, username: String)
 
 trait TimeDAO {
-  def putTime(isBegin: Boolean, timeStamp: Instant, taskName: String, username: String): Future[Option[Time]]
+  def putTime(isBegin: Boolean, timeStamp: Instant, taskName: String, username: String): Future[Unit]
   def removeLatestBegin(username: String): Future[Boolean] // cancel button
   def removeTimes(timeID: Long): Future[Boolean] //remove begin and end times
   def getLatestTime(username: String): Future[(Boolean, Option[Time])] // GET in routes

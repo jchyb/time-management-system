@@ -29,7 +29,7 @@ class ApplicationStart @Inject()(lifecycle: ApplicationLifecycle, protected val 
     tasks.schema ++
     timesBegin.schema ++
     timesEnd.schema)
-
+  createAll.createStatements.foreach(logger.info(_))
   db.run(createAll.createIfNotExists)
 
   // Shut-down hook

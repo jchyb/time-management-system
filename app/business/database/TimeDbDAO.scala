@@ -12,7 +12,7 @@ import slick.jdbc.PostgresProfile.api._
 import scala.concurrent.{ExecutionContext, Future}
 
 class TimesBegin(tag: Tag) extends Table[Time](tag, "TIMES_BEGIN") {
-  def timeID   = column[Long]("ID", O.PrimaryKey, O.Unique, O.AutoInc)
+  def timeID   = column[Long]("ID", O.PrimaryKey, O.AutoInc)
   def timeStamp = column[Instant]("TIME_STAMP")
   def taskName   = column[String]("TASK_NAME")
   def userName   = column[String]("USERNAME")
@@ -21,7 +21,7 @@ class TimesBegin(tag: Tag) extends Table[Time](tag, "TIMES_BEGIN") {
 }
 
 class TimesEnd(tag: Tag) extends Table[TimeEnd](tag, "TIMES_END") {
-  def timeID   = column[Long]("ID", O.PrimaryKey, O.Unique)
+  def timeID   = column[Long]("ID", O.PrimaryKey)
   def timeStamp = column[Instant]("TIME_STAMP")
 
   def * = (timeID, timeStamp) <> (TimeEnd.tupled,  TimeEnd.unapply)
@@ -36,7 +36,6 @@ class TimeDbDAO @Inject()(protected val dbConfigProvider: DatabaseConfigProvider
   val logger = Logger(this.getClass())
   override def putTime(isBegin: Boolean, timeStamp: Instant, taskName: String, username: String): Future[Unit] = {
     if(isBegin){
-      (timesBegin += Time(0, timeStamp, taskName, username)).statements.foreach(logger.info(_))
       db.run((timesBegin += Time(0, timeStamp, taskName, username))).map(_ => {})
     } else {
       db.run(

@@ -33,7 +33,7 @@ class SessionDbDAO @Inject()(protected val dbConfigProvider: DatabaseConfigProvi
 
   override def generateToken(username: String): Future[String] = {
     val token = s"$username-${UUID.randomUUID().toString}"
-    db.run(sessions += Session(token, username, LocalDateTime.now(ZoneOffset.UTC).plusSeconds(30)))
+    db.run(sessions += Session(token, username, LocalDateTime.now(ZoneOffset.UTC).plusHours(1)))
       .map(_ => token)
   }
 

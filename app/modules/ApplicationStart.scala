@@ -30,7 +30,7 @@ class ApplicationStart @Inject()(lifecycle: ApplicationLifecycle, protected val 
     timesBegin.schema ++
     timesEnd.schema)
 
-  db.run(createAll.create)
+  db.run(createAll.createIfNotExists)
 
   // Shut-down hook
   lifecycle.addStopHook { () =>

@@ -29,8 +29,8 @@ class ApplicationStart @Inject()(lifecycle: ApplicationLifecycle, protected val 
     tasks.schema ++
     timesBegin.schema ++
     timesEnd.schema)
-  createAll.createStatements.foreach(logger.info(_))
-  db.run(createAll.createIfNotExists)
+  createAll.createIfNotExistsStatements.foreach(logger.info(_))
+  db.run(createAll.create)
 
   // Shut-down hook
   lifecycle.addStopHook { () =>

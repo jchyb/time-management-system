@@ -9,6 +9,7 @@ import play.api.inject.ApplicationLifecycle
 import slick.jdbc.JdbcProfile
 import slick.lifted.TableQuery
 import slick.jdbc.PostgresProfile.api._
+import slick.jdbc.meta.MTable
 
 @Singleton
 class ApplicationStart @Inject()(lifecycle: ApplicationLifecycle, protected val dbConfigProvider: DatabaseConfigProvider)(
@@ -23,14 +24,37 @@ class ApplicationStart @Inject()(lifecycle: ApplicationLifecycle, protected val 
   val timesBegin = TableQuery[TimesBegin]
   val timesEnd = TableQuery[TimesEnd]
 
+  val tables = List(
+    sessions, users, tasks, timesBegin, timesEnd
+  )
+
   val createAll =
     (sessions.schema ++
     users.schema ++
     tasks.schema ++
     timesBegin.schema ++
     timesEnd.schema)
+
   createAll.createIfNotExistsStatements.foreach(logger.info(_))
-  db.run(createAll.create)
+/*
+  db.run(MTable.getTables)
+    .flatMap { foundTables =>
+      var actions = DBIO.seq()
+      for (table <- tables) {
+        if (!foundTables.map(_.name.name).contains(table.baseTableRow.tableName)) {
+          actions += table.schema.create
+        }
+      }
+      db.run(actions)
+    }
+*/
+  db.run(MTable.getTables)
+  .flatMap( v => {
+    val names = v.map(mt => mt.name.name)
+    val createActions = tables.filter( table =>
+      (!names.contains(table.baseTableRow.tableName))).map(_.schema.create)
+    db.run(DBIO.sequence(createActions))
+  })
 
   // Shut-down hook
   lifecycle.addStopHook { () =>

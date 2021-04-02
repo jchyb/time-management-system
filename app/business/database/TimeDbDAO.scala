@@ -34,17 +34,18 @@ class TimeDbDAO @Inject()(protected val dbConfigProvider: DatabaseConfigProvider
   val timesBegin = TableQuery[TimesBegin]
   val timesEnd = TableQuery[TimesEnd]
   val logger = Logger(this.getClass())
-
   override def putTime(isBegin: Boolean, timeStamp: Instant, taskName: String, username: String): Future[Unit] = {
-    if(isBegin){
+    if (isBegin) {
       db.run((timesBegin += Time(0, timeStamp, taskName, username))).map(_ => {})
     } else {
-      db.run(timesBegin.filter(a => a.taskName === taskName && a.userName === a.userName)
-        .sortBy(_.timeStamp).result.headOption)
-        .flatMap {
-          case Some(begin) => db.run(timesEnd += TimeEnd(begin.timeID, timeStamp))
-          case None => Future.successful()
-        }
+      db.run(
+        timesBegin.filter(a => a.taskName === taskName && a.userName === a.userName)
+          .sortBy(_.timeStamp).result.headOption
+          .flatMap[Unit, NoStream, Effect.Write] {
+            case Some(begin) => (timesEnd += TimeEnd(begin.timeID, timeStamp)).map(_ => {})
+            case None => DBIO.successful(None)
+          }
+      )
     }
   }
 

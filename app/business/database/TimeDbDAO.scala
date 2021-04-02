@@ -70,7 +70,7 @@ class TimeDbDAO @Inject()(protected val dbConfigProvider: DatabaseConfigProvider
       case Some((begin, maybeEnd)) =>
         maybeEnd match {
           case Some(end) => {
-            logger.info("test:" begin.toString + end.toString)
+            logger.info("test:" + begin.toString + end.toString)
             (true, Option(Time(end.timeID, end.timeStamp, begin.taskName, begin.username)))
           }
           case None => (false, Option(begin))

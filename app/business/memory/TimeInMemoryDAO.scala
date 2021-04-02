@@ -40,7 +40,7 @@ class TimeInMemoryDAO extends TimeDAO{
       }
     }
   }
-  //TODO remove sortBy
+  //TODO remove
   def removeLatestBegin(username: String): Future[Boolean] = {
     timesBegin.values.filter(_.username == username).toList.sortBy(_.timeStamp)(Ordering[Instant].reverse).headOption.map(_.timeID) match {
       case Some(value) =>

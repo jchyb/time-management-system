@@ -98,9 +98,11 @@ class DeckController @Inject()(cc: ControllerComponents, implicit val taskDAO: T
     }{Future.successful(Redirect(routes.LoginController.login()).discardingCookies(DiscardingCookie("sessionToken")))}
   }
 
+  //TODO improve/fix
   def timerCancelPost(): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
     Auth.withUser { user =>
-        timeDAO.removeLatestBegin(user.username)
+        timeDAO.getLatestTime(user.username)
+          .map(a => timeDAO.removeTimes(a._2.get.timeID))
         .flatMap(_ => Future.successful(Redirect(routes.DeckController.time())) )
     }{Future.successful(Redirect(routes.LoginController.login()).discardingCookies(DiscardingCookie("sessionToken")))}
   }

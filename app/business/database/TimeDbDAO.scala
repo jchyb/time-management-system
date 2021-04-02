@@ -48,14 +48,6 @@ class TimeDbDAO @Inject()(protected val dbConfigProvider: DatabaseConfigProvider
     }
   }
 
-  override def removeLatestBegin(username: String): Future[Boolean] = {
-    db.run(
-      timesBegin
-      .filter(_.userName === username)
-      .sortBy(_.timeStamp).take(1).delete
-    ).map( _ > 0 )
-  }
-
   override def removeTimes(timeID: Long): Future[Boolean] = {
     db.run( timesEnd.filter(_.timeID === timeID).delete )
       .flatMap(_ =>

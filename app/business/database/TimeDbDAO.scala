@@ -40,7 +40,7 @@ class TimeDbDAO @Inject()(protected val dbConfigProvider: DatabaseConfigProvider
     } else {
       db.run(
         timesBegin.filter(a => a.taskName === taskName && a.userName === a.userName)
-          .sortBy(_.timeStamp).result.headOption
+          .sortBy(_.timeStamp.desc).result.headOption
           .flatMap[Unit, NoStream, Effect.Write] {
             case Some(begin) => (timesEnd += TimeEnd(begin.timeID, timeStamp)).map(_ => {})
             case None => DBIO.successful(None)

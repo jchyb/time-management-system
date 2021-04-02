@@ -5,7 +5,6 @@ import models.{Task, TaskDAO}
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import slick.jdbc.JdbcProfile
 import slick.jdbc.PostgresProfile.api._
-import slick.lifted.Tag
 import javax.inject.Singleton
 
 import scala.concurrent.{ExecutionContext, Future}

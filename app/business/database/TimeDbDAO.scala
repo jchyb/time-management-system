@@ -63,14 +63,13 @@ class TimeDbDAO @Inject()(protected val dbConfigProvider: DatabaseConfigProvider
   override def getLatestTime(username: String): Future[(Boolean, Option[Time])] = {
     db.run(
       joinedQuery.filter(_._1.userName === username)
-      .sortBy(_._1.timeStamp)
+      .sortBy(_._1.timeStamp.desc)
       .result.headOption
     ).map{
       case None => (true, None)
       case Some((begin, maybeEnd)) =>
         maybeEnd match {
           case Some(end) => {
-            logger.info("test:" + begin.toString + end.toString)
             (true, Option(Time(end.timeID, end.timeStamp, begin.taskName, begin.username)))
           }
           case None => (false, Option(begin))

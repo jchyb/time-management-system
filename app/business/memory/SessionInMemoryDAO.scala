@@ -19,7 +19,7 @@ class SessionInMemoryDAO extends SessionDAO {
 
   def generateToken(username: String): Future[String] = {
     val token = s"$username-${UUID.randomUUID().toString}"
-    sessions.put(token, Session(token, username, LocalDateTime.now(ZoneOffset.UTC).plusSeconds(3000))) //TODO change seconds
+    sessions.put(token, Session(token, username, LocalDateTime.now(ZoneOffset.UTC).plusHours(1)))
     Future.successful(token)
   }
 

@@ -26,21 +26,19 @@ class TimeInMemoryDAO extends TimeDAO{
       val id = seq.getAndIncrement()
       val time = Time(id, timeStamp, taskName, username)
       timesBegin.addOne(id, time)
-      logger.info("Added: " + time.toString) //TODO remove
       Future.successful(Option(time))
     } else {
-      timesBegin.values.filter(_.username == username).toList //TODO verify !!!!!!!!!
+      timesBegin.values.filter(_.username == username).toList
         .sortBy(_.timeStamp)(Ordering[Instant].reverse).map(_.timeID).headOption match {
         case Some(value) =>
           val time = Time(value, timeStamp, taskName, username)
-          logger.info("Added 2: " + time.toString) //TODO remove
           timesEnd.addOne(value, time)
           Future.successful(Option(time))
         case None => Future.successful(None)
       }
     }
   }
-  //TODO remove
+
   def removeLatestBegin(username: String): Future[Boolean] = {
     timesBegin.values.filter(_.username == username).toList.sortBy(_.timeStamp)(Ordering[Instant].reverse).headOption.map(_.timeID) match {
       case Some(value) =>

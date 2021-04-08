@@ -1,33 +1,38 @@
 @import helper._
-@(taskForm: Form[TaskForm], taskDelForm: Form[TaskForm], tasks: List[Task])(implicit request: RequestHeader, messages: Messages)
+@(alerts: List[String], taskForm: Form[TaskForm], taskDelForm: Form[TaskDeleteForm], tasks: List[Task])(implicit request: RequestHeader, messages: Messages)
 
 @main("Task Timer - Edit") {
   @bar("","active","")
   <div class="container border col-10">
-    <div class="row">
-      <div class="col border pt-3 pb-3">
+        <div class="row">
+          <div class="col border pt-3 pb-3">
         <h3>Add Task</h3>
-        @form(action = CSRF(routes.DeckController.simpleFormPost())) {
-          @inputText(taskForm("name"), '_label -> "Task Name:", '_showConstraints -> false)
-          @select(
-            field = taskForm("parent"),
-            options = tasks.map(task => task.name -> task.name),
-            '_label -> "Parent:",
-            '_showConstraints -> false
-          )
-          <input type="submit" value="Add">
+        @form(action = CSRF(routes.TaskController.taskAddPost())) {
+          @input(taskForm("name"), '_label -> "Task Name:", '_showConstraints -> false) { (id, name, value, args) =>
+            <input type="text"  class="form-control" name="@name" id="@id" @toHtmlArgs(args)>
+          }
+          @input(taskForm("parent"), '_label -> "Parent:", '_showConstraints -> false){ (id, name, value, args) =>
+            <select class="custom-select mr-sm-2" name="@name" id="@id" @toHtmlArgs(args)>
+              @for(task <- tasks){
+                <option value=@task.name>@task.name</option>
+              }
+            </select>
+          }
+          <input type="submit" class="btn btn-outline-primary" value="Add">
         }
       </div>
 
       <div class="col border pt-3 pb-3">
         <h3>Delete Task</h3>
-        @form(action = CSRF(routes.DeckController.simpleFormPostDel())) {
-          @select(
-            field = taskDelForm("name"),
-            options = tasks.map(task => task.name -> task.name),
-            '_label -> "Task:"
-          )
-          <input type="submit" value="Delete">
+        @form(action = CSRF(routes.TaskController.taskDelPost())) {
+          @input(taskDelForm("name"), '_label -> "Task Name:", '_showConstraints -> false){ (id, name, value, args) =>
+            <select class="custom-select mr-sm-2" name="@name" id="@id" @toHtmlArgs(args)>
+              @for(task <- tasks){
+              <option value=@task.name>@task.name</option>
+              }
+            </select>
+          }
+          <input type="submit" class="btn btn-outline-danger" value="Delete">
         }
       </div>
 
@@ -53,6 +58,13 @@
 
     </div>
   </div>
+
+    @for(alert <- alerts) {
+    <div class="alert alert-info alert-dismissible fade show">
+        <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+        <strong>Info!</strong> @alert
+    </div>
+    }
 }
 
 

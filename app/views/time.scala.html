@@ -3,31 +3,41 @@
 
 @main("Task Timer") {
     @bar("active","","")
+    <div class="container border col-8">
+        <div class="row">
+        <div class="col border pt-2 pb-2">
+        <h3>Record Time</h3>
+        @if(isBegin){
+            @form(action = CSRF(routes.TimeController.timerBeginPost())) {
+                @input(timerForm("taskname"), '_label -> "Task Name:", '_showConstraints -> false){ (id, name, value, args) =>
+                    <select class="custom-select mr-sm-2" name="@name" id="@id" @toHtmlArgs(args)>
+                        @for(task <- tasks){
+                            <option value=@task.name>@task.name</option>
+                        }
+                    </select>
+                }
+                <input type="submit" value="Start" class="btn btn-outline-primary btn-lg btn-block">
+            }
+        } else {
+            <div> Started on: @maybeTime.get.timeStamp </div>
+            @form(action = CSRF(routes.TimeController.timerEndPost())) {
+                @input(timerForm("taskname"), '_label -> "Task Name:", '_showConstraints -> false){ (id, name, value, args) =>
+                    <select class="custom-select mr-sm-2" name="@name" id="@id" @toHtmlArgs(args)>
+                        <option value=@maybeTime.get.taskName>@maybeTime.get.taskName</option>
+                    </select>
+                }
+                <input type="submit" value="End" class="btn btn-outline-primary btn-lg btn-block mt-1">
+            }
+            @form(action = CSRF(routes.TimeController.timerCancelPost())) {
+                <div class="btn-toolbar">
+                    <input type="submit" value="Cancel" class="btn btn-outline-danger btn-sm btn-block mt-1">
+                </div>
+            }
+        }
 
-    @if(isBegin){
-        @form(action = CSRF(routes.DeckController.timerBeginPost())) {
-            @select(
-                field = timerForm("taskname"),
-                options = tasks.map(task => task.name -> task.name),
-                '_showConstraints -> false
-            )
-            <input type="submit" value="Start" class="btn btn-outline-success my-2 my-sm-0">
-        }
-    } else {
-        @form(action = CSRF(routes.DeckController.timerEndPost())) {
-
-                @select(
-                    field = timerForm("taskname"),
-                    options = Seq((maybeTime.get.taskName, maybeTime.get.taskName)),
-                    '_showConstraints -> true
-                )
-            <input type="submit" value="End" class="btn btn-outline-success my-2 my-sm-0">
-        }
-        @form(action = CSRF(routes.DeckController.timerCancelPost())) {
-            <input type="submit" value="Cancel" class="btn btn-outline-failure my-2 my-sm-0">
-        }
-        <div> @maybeTime.get.timeStamp </div>
-    }
+        </div>
+        </div>
+    </div>
 }
 
 

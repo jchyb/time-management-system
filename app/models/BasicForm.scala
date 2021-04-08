@@ -3,10 +3,8 @@ package models
 import play.api.data.Form
 import play.api.data.Forms._
 
-/*
-  Supplying form data types and constraints.
-*/
 case class TaskForm(name: String, parentName: String)
+case class TaskDeleteForm(name: String)
 case class TimerStartForm(taskname: String)
 case class LoginForm(username: String, password: String)
 case class RegisterForm(username: String, password: String)
@@ -16,6 +14,11 @@ object BasicForm {
       "name" -> nonEmptyText,
       "parent" -> nonEmptyText
     )(TaskForm.apply)(TaskForm.unapply)
+  )
+  val taskDelete: Form[TaskDeleteForm] = Form(
+    mapping(
+      "name" -> nonEmptyText,
+    )(TaskDeleteForm.apply)(TaskDeleteForm.unapply)
   )
   val login: Form[LoginForm] = Form(
     mapping(

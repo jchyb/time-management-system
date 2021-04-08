@@ -2,39 +2,49 @@
 @(alerts: List[String], loginForm: Form[LoginForm], registerForm: Form[RegisterForm])(implicit request: RequestHeader, messages: Messages)
 
 @main("login page"){
-<div class="container pt-1 pb-1">
-    <h1>TaskTimer</h1>
-    Personal Time Manager
-</div>
-
-<div class="absolute-center">
-<div class="row">
-    <div class="container pt-2 pb-2 border col-5">
-        <h2>Login:</h2>
-        @form(action = CSRF(routes.LoginController.loginPost())) {
-            @inputText(registerForm("username"),'_label -> "username:",'_showConstraints -> false)
-            @inputText(registerForm("password"),'_label -> "password:",'_showConstraints -> false)
-            <input type="submit" value="Submit">
-        }
+    <div class="container pt-1 pb-1">
+        <h2>Task Timer</h2>
+        Personal Time Manager
     </div>
 
-    <div class="container pt-2 pb-2 border col-5">
-    <h2>Register:</h2>
-    @form(action = CSRF(routes.LoginController.registerPost())) {
-        @inputText(registerForm("username"),'_label -> "username:",'_showConstraints -> false)
-        @inputText(registerForm("password"),'_label -> "password:",'_showConstraints -> false)
-        <input type="submit" value="Submit">
-    }
-    </div>
-    <div class="container pt-3 pb-3">
     @if(alerts!=null){
-        @for(alert <- alerts) {
-            <div class="alert alert-info alert-dismissible fade show">
-                <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-                <strong>Info!</strong> @alert
-            </div>
-        }
+        <div class="container">
+            @for(alert <- alerts) {
+                <div class="alert alert-info alert-dismissible fade show">
+                    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                    <strong>Info!</strong> @alert
+                </div>
+            }
+        </div>
     }
+
+    <div class="absolute-center">
+    <div class="row">
+        <div class="container pt-2 pb-2 border col-3">
+            <h3>Login:</h3>
+            @form(action = CSRF(routes.LoginController.loginPost())) {
+                @input(registerForm("username"), '_label -> "username:", '_showConstraints -> false) { (id, name, value, args) =>
+                    <input type="text"  class="form-control" name="@name" id="@id" @toHtmlArgs(args)>
+                }
+                @input(registerForm("password"), '_label -> "password:", '_showConstraints -> false) { (id, name, value, args) =>
+                    <input type="password"  class="form-control" name="@name" id="@id" @toHtmlArgs(args)>
+                }
+                <input type="submit" value="Login" class="btn btn-outline-primary btn-sm">
+            }
+        </div>
     </div>
-</div>
+    <div class="row">
+        <div class="container pt-2 pb-2 border col-3">
+        <h3>Or register:</h3>
+        @form(action = CSRF(routes.LoginController.registerPost())) {
+            @input(registerForm("username"), '_label -> "username:", '_showConstraints -> false) { (id, name, value, args) =>
+                <input type="text"  class="form-control" name="@name" id="@id" @toHtmlArgs(args)>
+            }
+            @input(registerForm("password"), '_label -> "password:", '_showConstraints -> false) { (id, name, value, args) =>
+                <input type="password"  class="form-control" name="@name" id="@id" @toHtmlArgs(args)>
+            }
+            <input type="submit" value="Register" class="btn btn-outline-primary btn-sm">
+        }
+        </div>
+    </div>
 }

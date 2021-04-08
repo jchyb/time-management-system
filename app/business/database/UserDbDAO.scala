@@ -26,6 +26,7 @@ class UserDbDAO @Inject()(protected val dbConfigProvider: DatabaseConfigProvider
   override def getUser(username: String): Future[Option[User]] = db.run(
     users.filter(_.username === username).take(1).result.headOption
   )
+
   override def addUser(username: String, password: String): Future[Option[User]] = {
     db.run(users += User(username, password)).map(_ =>
       Option(User(username, password))

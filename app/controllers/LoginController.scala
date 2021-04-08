@@ -36,6 +36,7 @@ class LoginController @Inject()(cc: ControllerComponents, implicit val taskDAO: 
       }
     )
   }
+
   def registerPost(): Action[AnyContent] = Action.async { implicit request =>
     BasicForm.register.bindFromRequest().fold(
       formWithErrors => {
@@ -64,7 +65,7 @@ class LoginController @Inject()(cc: ControllerComponents, implicit val taskDAO: 
           if(user.password == password) {
             sessionDAO.generateToken(username).map { token =>
               logger.info("ok " + token)
-              Redirect(routes.DeckController.priv()).withSession("sessionToken" -> token)
+              Redirect(routes.DeckController.home()).withSession("sessionToken" -> token)
             }
           } else {
             Future.successful(

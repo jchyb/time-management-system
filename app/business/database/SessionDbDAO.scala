@@ -19,7 +19,6 @@ class Sessions(tag: Tag) extends Table[Session](tag, "SESSIONS") {
   def * = (token, username, expiration) <> (Session.tupled,  Session.unapply)
 }
 
-//TODO DatabaseExecutionContext ?
 @Singleton
 class SessionDbDAO @Inject()(protected val dbConfigProvider: DatabaseConfigProvider)(
   implicit executionContext: ExecutionContext)
@@ -28,8 +27,12 @@ class SessionDbDAO @Inject()(protected val dbConfigProvider: DatabaseConfigProvi
   val sessions = TableQuery[Sessions]
 
   override def getSession(token: String): Future[Option[Session]] = {
-    db.run (sessions.filter(_.token === token).take(1).result.headOption)
-  } // TODO fix
+    db.run (
+      sessions
+      .filter(_.token === token)
+      .take(1).result.headOption
+    )
+  }
 
   override def generateToken(username: String): Future[String] = {
     val token = s"$username-${UUID.randomUUID().toString}"

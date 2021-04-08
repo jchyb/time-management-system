@@ -1,0 +1,18 @@
+@import helper._
+@(username: String)(implicit request: RequestHeader, messages: Messages)
+
+@main("private page"){
+
+    @bar("","","")
+    <div class="container border col-10">
+        <div class="row">
+            <div class="col border pt-3 pb-3">
+            <h2>Hello @username! Welcome to  Task Timer!</h2>
+                In time, you can log your work hours. <br>
+                In task, you can create and delete tasks for yourself. <br>
+                In stat, you can see the time spent on tasks. <br>
+                Good luck!
+            </div>
+        </div>
+    </div>
+}

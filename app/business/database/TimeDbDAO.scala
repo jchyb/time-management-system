@@ -52,8 +52,10 @@ class TimeDbDAO @Inject()(protected val dbConfigProvider: DatabaseConfigProvider
   override def removeTimes(timeID: Long): Future[Boolean] = {
     db.run( timesEnd.filter(_.timeID === timeID).delete )
       .flatMap(_ =>
-        db.run( timesBegin.filter(_.timeID === timeID).delete )
-        .map(_ == 1)
+        db.run( timesBegin
+          .filter(_.timeID === timeID)
+          .delete
+        ).map(_ == 1)
       )
   }
 

@@ -7,17 +7,17 @@
 GET     /                           controllers.LoginController.index()
 GET     /login                      controllers.LoginController.login()
 
-GET     /priv                       controllers.DeckController.priv()
+GET     /home                       controllers.DeckController.home()
 
-GET     /time                       controllers.DeckController.time()
-GET     /task                       controllers.DeckController.task()
+GET     /time                       controllers.TimeController.time()
+GET     /task                       controllers.TaskController.task()
 GET     /stat                       controllers.DeckController.stat()
 
-POST    /taskDelete                 controllers.DeckController.simpleFormPostDel()
-POST    /task                       controllers.DeckController.simpleFormPost()
-POST    /timeBegin                  controllers.DeckController.timerBeginPost()
-POST    /timeEnd                    controllers.DeckController.timerEndPost()
-POST    /timeCancel                 controllers.DeckController.timerCancelPost()
+POST    /taskDelete                 controllers.TaskController.taskDelPost()
+POST    /task                       controllers.TaskController.taskAddPost()
+POST    /timeBegin                  controllers.TimeController.timerBeginPost()
+POST    /timeEnd                    controllers.TimeController.timerEndPost()
+POST    /timeCancel                 controllers.TimeController.timerCancelPost()
 
 POST    /login                      controllers.LoginController.loginPost()
 POST    /register                   controllers.LoginController.registerPost()
